@@ -49,18 +49,32 @@ class DFA:
                         new_groups[tuple(new_group)] = set(state)
                 next_k_eq += [i for i in new_groups.values()]
 
+        new_transition_function = dict()
         self.states = set(''.join(state) for state in next_k_eq)
-        print(self.states)
-        newTrasitionFunc = dict()
+        # Changes Starting States
+        for state in self.states:
+            if self.start_state in state:
+                self.start_state = state
+
+        # Changing Transistion States
+        for ((key_string, key_trans), value) in self.transition_function.items():
+            for state in self.states:
+                if key_string in state:
+                    new_transition_function[(state, key_trans)] = value
+        for ((key_string, key_trans), value) in new_transition_function.items():
+            for state in self.states:
+                if value in state:
+                    new_transition_function[(key_string, key_trans)] = state
+
+        # Changing New Accept States
         newAcceptState = set()
         for state in self.states:
-            if state in self.accept_states:
-                newAcceptState.add(state)
-            newTrasitionFunc[(state, 0)] = self.transition_function[(state, 0)]
-            newTrasitionFunc[(state, 1)] = self.transition_function[(state, 1)]
+            for accept in self.accept_states:
+                if accept in state:
+                    newAcceptState.add(state)
+
         self.accept_states = newAcceptState
-        self.transition_function = newTrasitionFunc
-        # print(newTrasitionFunc)
+        self.transition_function = new_transition_function
 
 
 states = {'a', 'e', 'g', 'k', 'n', 'm'}
@@ -84,11 +98,11 @@ accept_states = {'e', 'g'}
 
 d = DFA(states, alphabet, tf, start_state, accept_states)
 
-print(d.run_with_input_list([0, 1]))
+print(d.run_with_input_list([0, 0, 1, 0]))
 print(d.run_with_input_list([1, 0]))
 d.minimize()
-print(d.accept_states)
-print(d.states)
-# print(d.run_with_input_list([0, 1]))
-# print(d.start_state)
-# print(d.run_with_input_list([1, 0]))
+print("Accept States:  ", d.accept_states)
+print("States:  ", d.states)
+print('Transition Function:  ', d.transition_function)
+print(d.run_with_input_list([0, 0, 1, 0]))
+print(d.run_with_input_list([1, 0]))
