@@ -1,1 +1,3 @@
-# dfa_minimization
+# Automata
+
+To check if they work, run all_test.py
